@@ -17,7 +17,7 @@ pnpm add @daveyplate/better-auth-triplit
 
 ## Auth Schema
 
-###auth-schema.ts
+### auth-schema.ts
 ```typescript
 import { Schema as S } from "@triplit/client"
 
