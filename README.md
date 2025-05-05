@@ -15,23 +15,119 @@ yarn add @daveyplate/better-auth-triplit
 pnpm add @daveyplate/better-auth-triplit
 ```
 
+## Auth Schema
+
+###auth-schema.ts
+```typescript
+import { Schema as S } from "@triplit/client"
+
+export const authSchema = S.Collections({
+    users: {
+        schema: S.Schema({
+            id: S.Id(),
+            name: S.String(),
+            email: S.String(),
+            emailVerified: S.Boolean({ default: false }),
+            image: S.Optional(S.String()),
+            createdAt: S.Date({ default: S.Default.now() }),
+            updatedAt: S.Date({ default: S.Default.now() })
+        }),
+        relationships: {
+            sessions: S.RelationMany("sessions", {
+                where: [["userId", "=", "$id"]]
+            }),
+            accounts: S.RelationMany("accounts", {
+                where: [["userId", "=", "$id"]]
+            })
+        },
+        permissions: {
+            authenticated: {
+                read: {
+                    filter: [["id", "=", "$token.sub"]]
+                }
+            }
+        }
+    },
+    sessions: {
+        schema: S.Schema({
+            id: S.Id(),
+            userId: S.String(),
+            token: S.String(),
+            expiresAt: S.Date(),
+            ipAddress: S.Optional(S.String()),
+            userAgent: S.Optional(S.String()),
+            createdAt: S.Date({ default: S.Default.now() }),
+            updatedAt: S.Date({ default: S.Default.now() })
+        }),
+        relationships: {
+            user: S.RelationById("users", "$userId")
+        },
+        permissions: {
+            authenticated: {
+                read: {
+                    filter: [["userId", "=", "$token.sub"]]
+                }
+            }
+        }
+    },
+    accounts: {
+        schema: S.Schema({
+            id: S.Id(),
+            userId: S.String(),
+            accountId: S.String(),
+            providerId: S.String(),
+            accessToken: S.Optional(S.String()),
+            refreshToken: S.Optional(S.String()),
+            accessTokenExpiresAt: S.Optional(S.Date()),
+            refreshTokenExpiresAt: S.Optional(S.Date()),
+            scope: S.Optional(S.String()),
+            idToken: S.Optional(S.String()),
+            password: S.Optional(S.String()),
+            createdAt: S.Date({ default: S.Default.now() }),
+            updatedAt: S.Date({ default: S.Default.now() })
+        }),
+        relationships: {
+            user: S.RelationById("users", "$userId")
+        },
+        permissions: {
+            authenticated: {
+                read: {
+                    filter: [["userId", "=", "$token.sub"]]
+                }
+            }
+        }
+    },
+    verifications: {
+        schema: S.Schema({
+            id: S.Id(),
+            identifier: S.String(),
+            value: S.String(),
+            expiresAt: S.Date(),
+            createdAt: S.Date({ default: S.Default.now() }),
+            updatedAt: S.Date({ default: S.Default.now() })
+        }),
+        permissions: {}
+    }
+})
+```
+
 ## Usage
 
 ```typescript
 import { betterAuth } from "better-auth";
-import { TriplitClient } from "@triplit/client";
-import { triplitAdapter } from '@daveyplate/better-auth-triplit';
+import { HttpClient } from "@triplit/client"
+import { schema } from "./schema"
 
-// Create a Triplit client
-const triplitClient = new TriplitClient({
-  serverUrl: "https://your-triplit-server.com",
-  token: "your-token" // if needed
-});
+export const httpClient = new HttpClient({
+    schema,
+    serverUrl: process.env.NEXT_PUBLIC_TRIPLIT_DB_URL,
+    token: process.env.TRIPLIT_SERVICE_TOKEN
+})
 
 // Create a Better Auth instance with Triplit adapter
 const auth = betterAuth({
   database: triplitAdapter({
-    client: triplitClient,
+    httpClient: triplitClient,
     debugLogs: false, // Optional: enable for debugging
     usePlural: true,  // Optional: set to false if your schema uses singular names
   }),
@@ -46,7 +142,7 @@ const auth = betterAuth({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `client` | `TriplitClient` | required | The Triplit client instance |
+| `httpClient` | `TriplitClient` | required | The Triplit client instance |
 | `debugLogs` | `boolean` | `false` | Enable detailed logging for debugging |
 | `usePlural` | `boolean` | `true` | Whether table names in the schema are plural |
 | `transactionHooks` | `object` | `undefined` | Hooks for create and update operations |
