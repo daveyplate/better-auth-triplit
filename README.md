@@ -142,7 +142,7 @@ const auth = betterAuth({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `httpClient` | `TriplitClient` | required | The Triplit client instance |
+| `httpClient` | `HTTPClient` | required | The Triplit HTTPClient instance with service token |
 | `debugLogs` | `boolean` | `false` | Enable detailed logging for debugging |
 | `usePlural` | `boolean` | `true` | Whether table names in the schema are plural |
 | `secretKey` | `string` | `process.env.BETTER_AUTH_SECRET` | Secret key for signing the JWT |
