@@ -145,11 +145,11 @@ const auth = betterAuth({
 | `httpClient` | `TriplitClient` | required | The Triplit client instance |
 | `debugLogs` | `boolean` | `false` | Enable detailed logging for debugging |
 | `usePlural` | `boolean` | `true` | Whether table names in the schema are plural |
-| `transactionHooks` | `object` | `undefined` | Hooks for create and update operations |
+| `secretKey` | `string` | `process.env.BETTER_AUTH_SECRET` | Secret key for signing the JWT |
 
 ## JWT
 
-The JWT is now accessible via useSession. It can be found on data.session.token. Here is an example React hook on how to synchronize your Better Auth state with Triplit. I'll likely make an easy to use hook for this in the future.
+The JWT is now accessible via useSession. It can be found on data.session.token. Here is an example React hook on how to synchronize your Better Auth state with Triplit. I'll likely make an easy to use hook for this in the future. We default to using your BETTER_AUTH_SECRET from process.env.BETTER_AUTH_SECRET for signing JWT's. You must also configure this on your Triplit server.
 
 ```ts
 const { data: sessionData, isPending } = useSession()
