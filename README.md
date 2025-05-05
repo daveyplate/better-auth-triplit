@@ -152,11 +152,11 @@ const auth = betterAuth({
 The JWT is now accessible via useSession. It can be found on data.session.token. Here is an example React hook on how to synchronize your Better Auth state with Triplit. I'll likely make an easy to use hook for this in the future. We default to using your BETTER_AUTH_SECRET from process.env.BETTER_AUTH_SECRET for signing JWT's. You must also configure this on your Triplit server.
 
 ```ts
+const connectionStatus = useConnectionStatus(triplit)
 const { data: sessionData, isPending } = useSession()
 
 useEffect(() => {
-    if (isPending) return
-    if (connectionStatus !== "OPEN") return
+    if (isPending || connectionStatus !== "OPEN") return
     if (triplit?.vars.$token?.sub === sessionData?.user.id) {
         if (sessionData) {
             triplit.updateSessionToken(sessionData.session.token)
@@ -167,7 +167,7 @@ useEffect(() => {
 
     triplit
         .endSession()
-        .then(() => sessionData && triplit.startSession(sessionData?.session.token))
+        .then(() => sessionData && triplit.startSession(sessionData.session.token))
 }, [connectionStatus, sessionData, isPending])
 ```
 
