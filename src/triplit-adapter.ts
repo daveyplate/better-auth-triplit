@@ -80,7 +80,7 @@ export const triplitAdapter = ({
             supportsDates: true, // Whether the database supports dates. (Default: true)
             supportsBooleans: true, // Whether the database supports booleans. (Default: true)
             disableIdGeneration: false, // Whether to disable automatic ID generation. (Default: false)
-            supportsNumericIds: true // Whether the database supports numeric IDs. (Default: true)
+            supportsNumericIds: false // Whether the database supports numeric IDs. (Default: true)
         },
         adapter: ({ options, getFieldName, getDefaultModelName, getModelName }) => {
             return {
