@@ -156,12 +156,13 @@ const connectionStatus = useConnectionStatus(triplit)
 const { data: sessionData, isPending } = useSession()
 
 useEffect(() => {
-        if (isPending || connectionStatus !== "OPEN") return
+    if (isPending || connectionStatus !== "OPEN") return
+    if (triplit.token === sessionData?.session.token) return
 
-        triplit
-            .endSession()
-            .then(() => sessionData && triplit.startSession(sessionData?.session.token))
-    }, [connectionStatus, sessionData, isPending])
+    triplit
+        .endSession()
+        .then(() => sessionData && triplit.startSession(sessionData?.session.token))
+}, [connectionStatus, sessionData, isPending])
 ```
 
 ## License
