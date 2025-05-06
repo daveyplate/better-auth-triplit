@@ -152,17 +152,42 @@ const auth = betterAuth({
 The JWT is now accessible via useSession. It can be found on data.session.token. Here is an example React hook on how to synchronize your Better Auth state with Triplit. I'll likely make an easy to use hook for this in the future. We default to using your BETTER_AUTH_SECRET from process.env.BETTER_AUTH_SECRET for signing JWT's. You must also configure this on your Triplit server.
 
 ```ts
-const connectionStatus = useConnectionStatus(triplit)
-const { data: sessionData, isPending } = useSession()
+import { triplit } from "@/triplit/client"
+import { useEffect } from "react"
+import { useSession } from "./auth-hooks"
 
-useEffect(() => {
-    if (isPending || connectionStatus !== "OPEN") return
-    if (triplit.token === sessionData?.session.token) return
+export function useTriplitAuth() {
+    const { data: sessionData, isPending } = useSession()
 
-    triplit
-        .endSession()
-        .then(() => sessionData && triplit.startSession(sessionData?.session.token))
-}, [connectionStatus, sessionData, isPending])
+    useEffect(() => {
+        if (isPending) return
+
+        const token = sessionData?.session.token || process.env.NEXT_PUBLIC_TRIPLIT_ANON_TOKEN!
+
+        setTriplitToken(token)
+    }, [isPending, sessionData])
+}
+
+async function setTriplitToken(token: string) {
+    if (triplit.token === token) return
+
+    const startSession = () => {
+        triplit.endSession().then(() => {
+            triplit.startSession(token)
+        })
+    }
+
+    if (triplit.connectionStatus === "CONNECTING" || triplit.connectionStatus === "CLOSING") {
+        const unlisten = triplit.onConnectionStatusChange((status) => {
+            if (status === "CONNECTING" || status === "CLOSING") return
+
+            startSession()
+            unlisten()
+        })
+    } else {
+        startSession()
+    }
+}
 ```
 
 ## License
