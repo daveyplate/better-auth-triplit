@@ -153,41 +153,35 @@ The JWT is now accessible via useSession. It can be found on data.session.token.
 
 ```ts
 import { triplit } from "@/triplit/client"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { toast } from "sonner"
 import { useSession } from "./auth-hooks"
 
 export function useTriplitAuth() {
     const { data: sessionData, isPending } = useSession()
+    const router = useRouter()
 
     useEffect(() => {
         if (isPending) return
 
-        const token = sessionData?.session.token || process.env.NEXT_PUBLIC_TRIPLIT_ANON_TOKEN!
+        const startSession = async () => {
+            try {
+                await triplit.startSession(
+                    sessionData?.session.token || process.env.NEXT_PUBLIC_TRIPLIT_ANON_TOKEN!
+                )
+            } catch (error) {
+                console.error(error)
+                toast.error((error as Error).message)
 
-        setTriplitToken(token)
-    }, [isPending, sessionData])
-}
+                if (sessionData) router.push("/auth/sign-out")
+            }
+        }
 
-async function setTriplitToken(token: string) {
-    if (triplit.token === token) return
-
-    const startSession = () => {
-        triplit.endSession().then(() => {
-            triplit.startSession(token)
-        })
-    }
-
-    if (triplit.connectionStatus === "CONNECTING" || triplit.connectionStatus === "CLOSING") {
-        const unlisten = triplit.onConnectionStatusChange((status) => {
-            if (status === "CONNECTING" || status === "CLOSING") return
-
-            startSession()
-            unlisten()
-        })
-    } else {
         startSession()
-    }
+    }, [isPending, sessionData, router])
 }
+
 ```
 
 ## License
