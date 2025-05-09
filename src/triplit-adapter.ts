@@ -135,9 +135,8 @@ export const triplitAdapter = ({
                         console.log("[Triplit Adapter] Insert:", model, JSON.stringify(data))
                     }
 
-                    await httpClient.insert(model, data)
-
-                    return data
+                    const insertedEntity = await httpClient.insert(model, data)
+                    return insertedEntity
                 },
                 async count({ model, where }) {
                     const parsedWhere = parseWhere(where)
