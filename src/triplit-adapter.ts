@@ -48,15 +48,19 @@ export function parseWhere(where?: Where[]) {
                 break
             case "gt":
                 parsedWhere.push([item.field, ">", item.value])
+                parsedWhere.push([item.field, "!=", null])
                 break
             case "gte":
                 parsedWhere.push([item.field, ">=", item.value])
+                parsedWhere.push([item.field, "!=", null])
                 break
             case "lt":
                 parsedWhere.push([item.field, "<", item.value])
+                parsedWhere.push([item.field, "!=", null])
                 break
             case "lte":
                 parsedWhere.push([item.field, "<=", item.value])
+                parsedWhere.push([item.field, "!=", null])
                 break
         }
     })
