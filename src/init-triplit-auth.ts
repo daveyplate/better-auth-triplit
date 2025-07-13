@@ -73,15 +73,7 @@ export function initTriplitAuth<M extends Models<M>>(
         onSessionError?.(error)
     })
 
-    const unbindOnFailureToSyncWrites = triplit.onFailureToSyncWrites(
-        (error) => {
-            console.error(error)
-            triplit.clearPendingChangesAll()
-        }
-    )
-
     return () => {
         unbindOnSessionError()
-        unbindOnFailureToSyncWrites()
     }
 }
