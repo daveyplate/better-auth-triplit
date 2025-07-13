@@ -1,4 +1,9 @@
-import type { HttpClient, Models, OrderStatement, WhereFilter } from "@triplit/client"
+import type {
+    HttpClient,
+    Models,
+    OrderStatement,
+    WhereFilter
+} from "@triplit/client"
 import type { Where } from "better-auth"
 import { createAdapter } from "better-auth/adapters"
 import { SignJWT } from "jose"
@@ -19,7 +24,10 @@ export interface TriplitAdapterConfig {
      * @default process.env.BETTER_AUTH_SECRET
      */
     secretKey?: string
-    // biome-ignore lint/suspicious/noExplicitAny:
+    /**
+     * Triplit HttpClient with the Service Token.
+     */
+    // biome-ignore lint/suspicious/noExplicitAny: ignore
     httpClient: HttpClient<any>
 }
 
@@ -86,7 +94,7 @@ export const triplitAdapter = ({
             disableIdGeneration: false, // Whether to disable automatic ID generation. (Default: false)
             supportsNumericIds: false // Whether the database supports numeric IDs. (Default: true)
         },
-        adapter: ({ options, getFieldName, getDefaultModelName, getModelName }) => {
+        adapter: ({ getFieldName, getDefaultModelName, getModelName }) => {
             return {
                 async create({ data, model }) {
                     if (getDefaultModelName(model) === "session") {
@@ -124,19 +132,28 @@ export const triplitAdapter = ({
                             name: user.name,
                             role: user.role,
                             username: user.username,
-                            exp: Math.floor(new Date(data.expiresAt).getTime() / 1000)
+                            exp: Math.floor(
+                                new Date(data.expiresAt).getTime() / 1000
+                            )
                         })
                             .setProtectedHeader({ alg: "HS256" })
                             .setIssuedAt()
                             .sign(secret || process.env.BETTER_AUTH_SECRET!)
-                        const tokenField = getFieldName({ model, field: "token" })
+                        const tokenField = getFieldName({
+                            model,
+                            field: "token"
+                        })
 
                         // @ts-ignore
                         data[tokenField] = token
                     }
 
                     if (debugLogs) {
-                        console.log("[Triplit Adapter] Insert:", model, JSON.stringify(data))
+                        console.log(
+                            "[Triplit Adapter] Insert:",
+                            model,
+                            JSON.stringify(data)
+                        )
                     }
 
                     const insertedEntity = await httpClient.insert(model, data)
@@ -193,7 +210,11 @@ export const triplitAdapter = ({
                         )
                     }
 
-                    await Promise.all(entities.map((entity) => httpClient.delete(model, entity.id)))
+                    await Promise.all(
+                        entities.map((entity) =>
+                            httpClient.delete(model, entity.id)
+                        )
+                    )
                 },
                 async deleteMany({ model, where }) {
                     const parsedWhere = parseWhere(where)
@@ -219,17 +240,20 @@ export const triplitAdapter = ({
                         )
                     }
 
-                    await Promise.all(entities.map((entity) => httpClient.delete(model, entity.id)))
+                    await Promise.all(
+                        entities.map((entity) =>
+                            httpClient.delete(model, entity.id)
+                        )
+                    )
 
                     return entities.length
                 },
                 async findMany({ model, where, limit, sortBy, offset }) {
                     const parsedWhere = parseWhere(where)
                     const order = sortBy
-                        ? ([[sortBy.field, sortBy.direction.toUpperCase()]] as OrderStatement<
-                              Models,
-                              string
-                          >[])
+                        ? ([
+                              [sortBy.field, sortBy.direction.toUpperCase()]
+                          ] as OrderStatement<Models, string>[])
                         : undefined
 
                     if (debugLogs) {
@@ -312,7 +336,8 @@ export const triplitAdapter = ({
                         )
                     }
 
-                    if (!entity) throw new Error("[Triplit Adapter] Entity not found")
+                    if (!entity)
+                        throw new Error("[Triplit Adapter] Entity not found")
 
                     await httpClient.update(model, entity.id, (entity) => {
                         Object.assign(entity, update)

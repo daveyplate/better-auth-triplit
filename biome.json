@@ -1,24 +1,24 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
     "vcs": {
         "enabled": true,
         "clientKind": "git",
-        "useIgnoreFile": true,
-        "defaultBranch": "main"
-    },
-    "files": {
-        "ignore": ["./src/components/ui/**"]
+        "useIgnoreFile": true
     },
     "formatter": {
         "indentStyle": "space",
-        "indentWidth": 4,
-        "lineWidth": 100
+        "indentWidth": 4
+    },
+    "files": {
+        "includes": ["**", "!src/components/ui/**"]
     },
     "linter": {
         "rules": {
             "a11y": {
-                "noSvgWithoutTitle": "off",
-                "useGenericFontNames": "off"
+                "noSvgWithoutTitle": "off"
+            },
+            "correctness": {
+                "useHookAtTopLevel": "off"
             },
             "suspicious": {
                 "noArrayIndexKey": "off",
@@ -32,15 +32,14 @@
                 "noNonNullAssertion": "off",
                 "useSelfClosingElements": {
                     "fix": "safe",
-                    "level": "warn"
+                    "level": "info",
+                    "options": {}
                 },
                 "useTemplate": {
                     "fix": "safe",
-                    "level": "warn"
+                    "level": "info",
+                    "options": {}
                 }
-            },
-            "correctness": {
-                "noUnusedImports": "info"
             },
             "nursery": {
                 "useSortedClasses": {
