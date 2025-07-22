@@ -1,7 +1,7 @@
 {
     "name": "@daveyplate/better-auth-triplit",
     "homepage": "https://github.com/daveyplate/better-auth-triplit",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Better Auth adapter for Triplit",
     "module": "dist/index",
     "types": "dist/index",
