@@ -148,6 +148,30 @@ export const triplitAdapter = ({
                         data[tokenField] = token
                     }
 
+                    if (
+                        getDefaultModelName(model) === "apikey" ||
+                        getDefaultModelName(model) === "organization"
+                    ) {
+                        const metadataField = getFieldName({
+                            model,
+                            field: "metadata"
+                        })
+
+                        if (typeof data[metadataField] === "string") {
+                            // @ts-ignore
+                            data[metadataField] = JSON.parse(
+                                data[metadataField]
+                            )
+
+                            try {
+                                // @ts-ignore
+                                data[metadataField] = JSON.parse(
+                                    data[metadataField]
+                                )
+                            } catch (_) {}
+                        }
+                    }
+
                     if (debugLogs) {
                         console.log(
                             "[Triplit Adapter] Insert:",
@@ -314,6 +338,33 @@ export const triplitAdapter = ({
                 async update({ model, update, where }) {
                     const parsedWhere = parseWhere(where)
 
+                    if (
+                        getDefaultModelName(model) === "apikey" ||
+                        getDefaultModelName(model) === "organization"
+                    ) {
+                        const metadataField = getFieldName({
+                            model,
+                            field: "metadata"
+                        })
+
+                        // @ts-ignore
+                        if (typeof update[metadataField] === "string") {
+                            // @ts-ignore
+                            update[metadataField] = JSON.parse(
+                                // @ts-ignore
+                                update[metadataField]
+                            )
+
+                            try {
+                                // @ts-ignore
+                                update[metadataField] = JSON.parse(
+                                    // @ts-ignore
+                                    update[metadataField]
+                                )
+                            } catch (_) {}
+                        }
+                    }
+
                     if (debugLogs) {
                         console.log(
                             "[Triplit Adapter] Update Fetch:",
@@ -347,6 +398,30 @@ export const triplitAdapter = ({
                 },
                 async updateMany({ model, update, where }) {
                     const parsedWhere = parseWhere(where)
+
+                    if (
+                        getDefaultModelName(model) === "apikey" ||
+                        getDefaultModelName(model) === "organization"
+                    ) {
+                        const metadataField = getFieldName({
+                            model,
+                            field: "metadata"
+                        })
+
+                        if (typeof update[metadataField] === "string") {
+                            // @ts-ignore
+                            update[metadataField] = JSON.parse(
+                                update[metadataField]
+                            )
+
+                            try {
+                                // @ts-ignore
+                                update[metadataField] = JSON.parse(
+                                    update[metadataField]
+                                )
+                            } catch (_) {}
+                        }
+                    }
 
                     if (debugLogs) {
                         console.log(
